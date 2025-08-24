@@ -1,12 +1,13 @@
-
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  RouterProvider,
+} from "react-router-dom";
+import { router } from "./routers/AppRoutes";
 
 function App() {
-
-  return (
-   <>
-   <p className='text-2xl text-amber-200'>áukidjasdasd</p>
-   </>
-  )
+  return <RouterProvider router={router} />;
 }
 
-export default App
+export default App;
