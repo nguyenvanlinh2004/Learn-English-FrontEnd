@@ -4,14 +4,30 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import PersonIcon from "@mui/icons-material/Person";
 import LockIcon from "@mui/icons-material/Lock";
+import { useDispatch, useSelector } from "react-redux";
+import { loginThunk } from "../../features/auth/authThunk";
 
-import bg from "../../assets/images/signin.png"; // ảnh minh họa (giống bên trái)
-import logo from "../../assets/images/logo.png"; // logo app
-import qr from "../../assets/images/qr.png"; // QR download
+import bg from "../../assets/images/signin.png";
+import logo from "../../assets/images/logo.png";
+import qr from "../../assets/images/qr.png";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const dispatch = useDispatch<any>();
+  const navigate = useNavigate();
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const result = await dispatch(loginThunk({ email, password }));
 
+    if (loginThunk.fulfilled.match(result)) {
+      navigate("/",{ replace: true });
+    } else {
+      alert("Đăng nhập thất bại!");
+    }
+  };
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 h-screen">
       {/* Bên trái */}
@@ -53,64 +69,71 @@ const Login = () => {
 
         <div className="w-full max-w-sm flex flex-col gap-y-6">
           <h1 className="text-2xl font-semibold">Login</h1>
+          <form onSubmit={handleLogin}>
+            <TextField
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              label="Email"
+              margin="normal"
+              variant="outlined"
+              fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PersonIcon />
+                  </InputAdornment>
+                ),
+              }}
+            />
 
-          <TextField
-            label="Email"
-            variant="outlined"
-            fullWidth
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <PersonIcon />
-                </InputAdornment>
-              ),
-            }}
-          />
+            <TextField
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              label="Password"
+              margin="normal"
+              type={showPassword ? "text" : "password"}
+              variant="outlined"
+              fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <LockIcon />
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    {showPassword ? (
+                      <VisibilityIcon
+                        sx={{ cursor: "pointer" }}
+                        onClick={() => setShowPassword(false)}
+                      />
+                    ) : (
+                      <VisibilityOffIcon
+                        sx={{ cursor: "pointer" }}
+                        onClick={() => setShowPassword(true)}
+                      />
+                    )}
+                  </InputAdornment>
+                ),
+              }}
+            />
 
-          <TextField
-            label="Password"
-            type={showPassword ? "text" : "password"}
-            variant="outlined"
-            fullWidth
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <LockIcon />
-                </InputAdornment>
-              ),
-              endAdornment: (
-                <InputAdornment position="end">
-                  {showPassword ? (
-                    <VisibilityIcon
-                      sx={{ cursor: "pointer" }}
-                      onClick={() => setShowPassword(false)}
-                    />
-                  ) : (
-                    <VisibilityOffIcon
-                      sx={{ cursor: "pointer" }}
-                      onClick={() => setShowPassword(true)}
-                    />
-                  )}
-                </InputAdornment>
-              ),
-            }}
-          />
-
-          <Button
-            variant="contained"
-            fullWidth
-            sx={{
-              backgroundColor: "#22c55e",
-              textTransform: "none",
-              fontSize: 16,
-              fontWeight: 500,
-              py: 1.2,
-              "&:hover": { backgroundColor: "#16a34a" },
-            }}
-          >
-            Login
-          </Button>
-
+            <Button
+              type="submit"
+              variant="contained"
+              fullWidth
+              sx={{
+                backgroundColor: "#22c55e",
+                textTransform: "none",
+                fontSize: 16,
+                fontWeight: 500,
+                py: 1.2,
+                "&:hover": { backgroundColor: "#16a34a" },
+              }}
+            >
+              Login
+            </Button>
+          </form>
           <a href="#" className="text-sm text-green-600 underline text-center">
             Forgot password
           </a>
